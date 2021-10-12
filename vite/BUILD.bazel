@@ -12,7 +12,7 @@ filegroup(
         "*.bzl",
         "*.bazel",
     ]) + [
-        "//mylang/private:package_content",
+        "//vite/private:package_content",
     ],
     visibility = ["//:__pkg__"],
 )

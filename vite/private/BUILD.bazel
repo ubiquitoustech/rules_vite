@@ -3,6 +3,9 @@ filegroup(
     srcs = glob([
         "*.bzl",
         "*.bazel",
+        "*.sh",
     ]),
-    visibility = ["//mylang:__pkg__"],
+    visibility = ["//vite:__pkg__"],
 )
+
+exports_files(["launcher_template.sh"])
