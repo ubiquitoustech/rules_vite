@@ -32,3 +32,18 @@ rules_vite_dependencies()
 > note, in the above, replace the VITE_COMMIT and VITE_SHA256 with the one indicated
 > in the release notes for rules_vite or one of your choosing
 > In the future, our release automation should take care of this.
+
+## Examples
+
+The examples/vite-project folder has a working example that can be run.
+
+```
+# Run the dev server and make quick changes to files in src of that folder and the changes are shown in browser right away and the state of the browser is kept
+$ bazel run dev
+
+# build the production bundle
+$ bazel build prod
+
+# run the production bundle
+$ bazel run prodserver
+```
