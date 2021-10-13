@@ -9,7 +9,7 @@ workspace(
 )
 
 # Install our "runtime" dependencies which users install as well
-load("//vite:repositories.bzl", "rules_vite_dependencies")  # "mylang_register_toolchains",
+load("@ubiquitous_tech_rules_vite//vite:repositories.bzl", "rules_vite_dependencies")
 
 rules_vite_dependencies()
 

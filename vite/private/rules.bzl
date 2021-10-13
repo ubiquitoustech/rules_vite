@@ -4,7 +4,6 @@ vite rule
 
 load(":actions.bzl", "vite_build_action")
 load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSEcmaScriptModuleInfo", "JSModuleInfo", "node_modules_aspect")
-load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "module_mappings_aspect")
 
 def _vite_build_impl(ctx):
     deps_depsets = []
@@ -56,7 +55,7 @@ vite_build = rule(
         ),
         "deps": attr.label_list(
             default = [],
-            aspects = [module_mappings_aspect, node_modules_aspect],
+            aspects = [node_modules_aspect],
             doc = "A list of direct dependencies that are required to build the bundle",
         ),
         "data": attr.label_list(
@@ -65,6 +64,7 @@ vite_build = rule(
         ),
         "vite": attr.label(
             doc = "An executable target that runs Vite",
+            # TODO this should be changed so that it doesn't require user install and naming
             default = Label("@npm//vite/bin:vite"),
             executable = True,
             cfg = "host",
@@ -143,7 +143,7 @@ vite_dev = rule(
         ),
         "deps": attr.label_list(
             default = [],
-            aspects = [module_mappings_aspect, node_modules_aspect],
+            aspects = [node_modules_aspect],
             doc = "A list of direct dependencies that are required to build the bundle",
         ),
         "data": attr.label_list(
@@ -152,6 +152,7 @@ vite_dev = rule(
         ),
         "vite": attr.label(
             doc = "An executable target that runs Vite",
+            # TODO this should be changed so that it doesn't require user install and naming
             default = Label("@npm//vite/bin:vite"),
             executable = True,
             cfg = "host",
