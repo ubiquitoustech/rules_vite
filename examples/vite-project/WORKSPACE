@@ -32,10 +32,18 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.0/rules_nodejs-4.4.0.tar.gz"],
 )
 
-# then add the new vite rules repo ( this can be local )
-local_repository(
+# local_repository(
+#     name = "ubiquitous_tech_rules_vite",
+#     path = "../../../rules_vite",
+# )
+
+VITE_COMMIT = "2790cd1964bf8a8c70c77ddc7ea32220ff000744"
+
+http_archive(
     name = "ubiquitous_tech_rules_vite",
-    path = "../../../rules_vite",
+    sha256 = "55f97743ec28e1b3ef24547d7f171a381cca46c8c296267bac32f77faec25075",
+    strip_prefix = "rules_vite-%s" % VITE_COMMIT,
+    urls = ["https://github.com/ubiquitoustech/rules_vite/archive/%s.zip" % VITE_COMMIT],
 )
 
 # Check the bazel version and download npm dependencies
