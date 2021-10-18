@@ -8,11 +8,11 @@ export default defineConfig({
   // },
   plugins: [react()],
   server: {
-    port: 3001,
+    port: 3002,
     hmr: {
       protocol: "ws",
       // timeout: 1,
-      port: 3001,
+      port: 3002,
       // host: 'localhost',
       // overlay: false,
     },

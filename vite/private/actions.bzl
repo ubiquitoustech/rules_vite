@@ -19,10 +19,8 @@ def vite_build_action(ctx, srcs, out):
 
     launcher_args.add_all([
         "build",
-        # "-l",
-        # "info",
-        "--minify",
-        "esbuild",
+        "--config",
+        ctx.file.config,
         "--outDir",
         out.path,
     ])

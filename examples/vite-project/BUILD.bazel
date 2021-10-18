@@ -10,10 +10,10 @@ vite(
     srcs = glob(["src/**"]) + [
         ":index.html",
         ":package.json",
-        ":vite.config.ts",
         ":yarn.lock",
         ":tsconfig.json",
     ],
+    config = ":vite.config.ts",
     deps = [
         "@npm//@types/react",
         "@npm//@types/react-dom",
@@ -30,10 +30,10 @@ vite_dev(
     srcs = glob(["src/**"]) + [
         ":index.html",
         ":package.json",
-        ":vite.config.mjs",
         ":yarn.lock",
         ":tsconfig.json",
     ],
+    config = ":vite.config.mjs",
     deps = [
         "@npm//@types/react",
         "@npm//@types/react-dom",

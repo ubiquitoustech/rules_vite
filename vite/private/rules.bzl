@@ -26,7 +26,7 @@ def _vite_build_impl(ctx):
 
     deps_inputs = depset(transitive = deps_depsets).to_list()
 
-    inputs = deps_inputs + ctx.files.srcs
+    inputs = deps_inputs + ctx.files.srcs + ctx.files.config
 
     inputs = [d for d in inputs if not (d.path.endswith(".d.ts") or d.path.endswith(".tsbuildinfo"))]
 
@@ -65,12 +65,17 @@ vite_build = rule(
         "vite": attr.label(
             doc = "An executable target that runs Vite",
             # TODO this should be changed so that it doesn't require user install and naming
+            # create a package with the rules
             default = Label("@npm//vite/bin:vite"),
             executable = True,
             cfg = "host",
         ),
+        "config": attr.label(
+            allow_single_file = [".ts", ".mjs", ".js"],
+            mandatory = True,
+        ),
     },
-    doc = "Builds an executable program from Go source code",
+    doc = "Builds an executable program from vite source code",
 )
 
 def _to_manifest_path(ctx, file):
@@ -101,7 +106,7 @@ def _vite_dev_impl(ctx):
 
     deps_inputs = depset(transitive = deps_depsets).to_list()
 
-    inputs = deps_inputs + ctx.files.srcs
+    inputs = deps_inputs + ctx.files.srcs + ctx.files.config
 
     inputs = [d for d in inputs if not (d.path.endswith(".d.ts") or d.path.endswith(".tsbuildinfo"))]
 
@@ -120,6 +125,7 @@ def _vite_dev_impl(ctx):
         substitutions = {
             "TEMPLATED_main": _to_manifest_path(ctx, ctx.executable.vite),
             "TEMPLATED_workspace": workspace_name,
+            "TEMPLATED_config": ctx.file.config.path,
         },
         is_executable = True,
     )
@@ -153,9 +159,14 @@ vite_dev = rule(
         "vite": attr.label(
             doc = "An executable target that runs Vite",
             # TODO this should be changed so that it doesn't require user install and naming
+            # create a package with the rules
             default = Label("@npm//vite/bin:vite"),
             executable = True,
             cfg = "host",
+        ),
+        "config": attr.label(
+            allow_single_file = [".ts", ".mjs", ".js"],
+            mandatory = True,
         ),
         "_bash_runfile_helpers": attr.label(default = Label("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel/tools/bash/runfiles")),
         "_launcher_template": attr.label(allow_single_file = True, default = Label("@ubiquitous_tech_rules_vite//vite/private:launcher_template.sh")),
