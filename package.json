@@ -1,0 +1,11 @@
+{
+  "name": "@ubiquitoustech/rules_vite",
+  "version": "NPM_VERSION",
+  "description": "vite rules for bazel",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ubiquitoustech/rules_vite.git"
+  },
+  "author": "dymart",
+  "license": "Apache-2.0"
+}

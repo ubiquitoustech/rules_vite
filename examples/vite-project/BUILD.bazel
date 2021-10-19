@@ -1,5 +1,11 @@
+# load(
+#     "@ubiquitous_tech_rules_vite//vite:defs.bzl",
+#     "vite",
+#     "vite_dev",
+# )
+
 load(
-    "@ubiquitous_tech_rules_vite//vite:defs.bzl",
+    "@npm//@ubiquitoustech/rules_vite:index.bzl",
     "vite",
     "vite_dev",
 )

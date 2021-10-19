@@ -1,9 +1,10 @@
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load(":version.bzl", "VERSION")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 
 # This declares the release artifact users
 pkg_tar(
-    name = "rules_mylang-" + VERSION,
+    name = "rules_vite-" + VERSION,
     srcs = [
         "LICENSE",
         "README.md",
@@ -16,4 +17,35 @@ pkg_tar(
     # Make it owned by root so it does not have the uid of the CI robot.
     owner = "0.0",
     strip_prefix = ".",
+)
+
+# how to publish
+# bazel run npm_package.publish -- --access public
+
+# how to build
+# bazel build npm_package
+
+# login to npm
+# bazel run @nodejs//:npm_node_repositories who
+# or
+# npm login
+
+pkg_npm(
+    name = "npm_package",
+    package_name = "@ubiquitoustech/rules_vite",
+    srcs = [
+        "BUILD",
+        "LICENSE",
+        "README.md",
+        "index.bzl",
+        "package.json",
+        "version.bzl",
+        "//vite:package_content",
+    ],
+    substitutions = {
+        # this is used to replace the load statements for files in the package
+        "@ubiquitous_tech_rules_vite//": "//@ubiquitoustech/rules_vite/",
+        "@npm": "",
+        "NPM_VERSION": VERSION,
+    },
 )
