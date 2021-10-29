@@ -51,3 +51,4 @@ $ bazel run prodserver
 ## TODO
 
 1. clean up how the end website is packaged use https://github.com/bazelbuild/rules_pkg when it's available for directories
+2. remove toolchain files that are not used
