@@ -1,12 +1,12 @@
 """
-vite rule
+vite-plugin-ssr rule
 """
 
-load(":actions.bzl", "vite_build_action")
+load(":vite-plugin-ssr-actions.bzl", "vite_plugin_ssr_build_action")
 load(":providers.bzl", "ViteInfo")
 load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "JSEcmaScriptModuleInfo", "JSModuleInfo", "node_modules_aspect")
 
-def _vite_build_impl(ctx):
+def _vite_plugin_ssr_build_impl(ctx):
     deps_depsets = []
     path_alias_mappings = dict()
 
@@ -28,7 +28,7 @@ def _vite_build_impl(ctx):
 
     deps_inputs = depset(transitive = deps_depsets).to_list()
 
-    inputs = deps_inputs + ctx.files.srcs + ctx.files.config
+    inputs = deps_inputs + ctx.files.srcs
 
     inputs = [d for d in inputs if not (d.path.endswith(".d.ts") or d.path.endswith(".tsbuildinfo"))]
 
@@ -45,10 +45,12 @@ def _vite_build_impl(ctx):
 
     main_archive = ctx.actions.declare_directory(prefix)
 
-    vite_build_action(
+    vite_plugin_ssr_build_action(
         ctx,
         srcs = inputs,
         out = main_archive,
+        clientpath = ctx.attr.client_build[ViteInfo].info.output_directory_path,
+        serverpath = ctx.attr.server_build[ViteInfo].info.output_directory_path,
     )
 
     return [
@@ -65,8 +67,8 @@ def _vite_build_impl(ctx):
         ),
     ]
 
-vite_build = rule(
-    _vite_build_impl,
+vite_plugin_ssr_build = rule(
+    _vite_plugin_ssr_build_impl,
     attrs = {
         "srcs": attr.label_list(
             allow_files = True,
@@ -81,14 +83,21 @@ vite_build = rule(
             allow_files = True,
             doc = "Data files available to binaries using this library",
         ),
-        "vite": attr.label(
+        "_vite_plugin_ssr": attr.label(
             doc = "An executable target that runs Vite",
-            default = Label("@npm//vite/bin:vite"),
+            default = Label("@npm//vite-plugin-ssr/bin:vite-plugin-ssr"),
             executable = True,
             cfg = "host",
         ),
-        "config": attr.label(
-            allow_single_file = [".ts", ".mjs", ".js"],
+        "client_build": attr.label(
+            providers = [ViteInfo],
+            # aspects = [node_modules_aspect],
+            # allow_single_file = [".ts", ".mjs", ".js"],
+            mandatory = True,
+        ),
+        "server_build": attr.label(
+            providers = [ViteInfo],
+            # allow_single_file = [".ts", ".mjs", ".js"],
             mandatory = True,
         ),
         "args": attr.string_list(
@@ -109,7 +118,7 @@ def _to_manifest_path(ctx, file):
     else:
         return ctx.workspace_name + "/" + file.short_path
 
-def _vite_dev_impl(ctx):
+def _vite_plugin_ssr_dev_impl(ctx):
     deps_depsets = []
 
     path_alias_mappings = dict()
@@ -131,12 +140,12 @@ def _vite_dev_impl(ctx):
 
     deps_inputs = depset(transitive = deps_depsets).to_list()
 
-    inputs = deps_inputs + ctx.files.srcs + ctx.files.config
+    inputs = deps_inputs + ctx.files.srcs  # + ctx.files.config
 
     inputs = [d for d in inputs if not (d.path.endswith(".d.ts") or d.path.endswith(".tsbuildinfo"))]
 
     devserver_runfiles = [
-        ctx.executable.vite,
+        ctx.executable.ts_node,
     ]
 
     devserver_runfiles += inputs
@@ -151,15 +160,14 @@ def _vite_dev_impl(ctx):
         template = ctx.file._launcher_template,
         output = ctx.outputs.script,
         substitutions = {
-            "TEMPLATED_main": _to_manifest_path(ctx, ctx.executable.vite),
+            "TEMPLATED_main": _to_manifest_path(ctx, ctx.executable.ts_node),
+            "TEMPLATED_command": ctx.file.command.path,
             "TEMPLATED_workspace": workspace_name,
-            "TEMPLATED_config": ctx.file.config.path,
+            # "TEMPLATED_config": ctx.file.config.path,
             "TEMPLATED_npm_path": npm_path,
         },
         is_executable = True,
     )
-
-    # print(_to_manifest_path(ctx, ctx.executable.vite))
 
     # return for the dev server
     return [DefaultInfo(
@@ -171,8 +179,8 @@ def _vite_dev_impl(ctx):
         ),
     )]
 
-vite_dev = rule(
-    _vite_dev_impl,
+vite_plugin_ssr_dev = rule(
+    _vite_plugin_ssr_dev_impl,
     attrs = {
         "srcs": attr.label_list(
             allow_files = True,
@@ -187,16 +195,23 @@ vite_dev = rule(
             allow_files = True,
             doc = "Data files available to binaries using this library",
         ),
-        "vite": attr.label(
+        "ts_node": attr.label(
             doc = "An executable target that runs Vite",
-            default = Label("@npm//vite/bin:vite"),
+            # TODO this should be changed so that it doesn't require user install and naming
+            # create a package with the rules
+            default = Label("@npm//ts-node/bin:ts-node"),
             executable = True,
             cfg = "host",
         ),
-        "config": attr.label(
-            allow_single_file = [".ts", ".mjs", ".js"],
+        "command": attr.label(
+            allow_single_file = [".ts", ".js"],
+            # allow_single_file = [".ts", ".mjs", ".js"],
             mandatory = True,
         ),
+        # "config": attr.label(
+        #     allow_single_file = [".ts", ".mjs", ".js"],
+        #     mandatory = True,
+        # ),
         "npm_managed_directory_name": attr.string(
             default = "npm",
             doc = "name of the managed directory you would like to use for this dev tool. ex: managed_directories = {'@npm': ['node_modules']} would be 'npm'. Do not add the @. Please look at https://bazelbuild.github.io/rules_nodejs/dependencies.html#using-bazel-managed-dependencies if you are having trouble or need to set this up.",
@@ -206,7 +221,7 @@ vite_dev = rule(
             doc = "path of the managed directory you would like to use for this dev tool. ex: managed_directories = {'@npm': ['node_modules']} would be 'node_modules'. There is no need to add '/' to the beginning or end. Please look at https://bazelbuild.github.io/rules_nodejs/dependencies.html#using-bazel-managed-dependencies if you are having trouble or need to set this up.",
         ),
         "_bash_runfile_helpers": attr.label(default = Label("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel/tools/bash/runfiles")),
-        "_launcher_template": attr.label(allow_single_file = True, default = Label("@ubiquitous_tech_rules_vite//vite/private:launcher_template.sh")),
+        "_launcher_template": attr.label(allow_single_file = True, default = Label("@ubiquitous_tech_rules_vite//vite/private:vite_plugin_ssr_launcher_template.sh")),
     },
     outputs = {
         "script": "%{name}.sh",
@@ -214,8 +229,8 @@ vite_dev = rule(
     doc = "Runs the dev server for vite",
 )
 
-def vite_devserver_macro(name, args = [], visibility = None, tags = [], testonly = 0, **kwargs):
-    vite_dev(
+def vite_plugin_ssr_devserver_macro(name, args = [], visibility = None, tags = [], testonly = 0, **kwargs):
+    vite_plugin_ssr_dev(
         name = "%s_launcher" % name,
         testonly = testonly,
         visibility = ["//visibility:private"],

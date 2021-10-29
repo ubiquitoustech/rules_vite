@@ -47,3 +47,10 @@ $ bazel build prod
 # run the production bundle
 $ bazel run prodserver
 ```
+
+## TODO
+
+1. add args to rules
+2. have vite build --ssr
+3. try vite-plugin-ssr that takes both vite build and vite build --ssr as deps
+4. serve the website from a nodejs image for ssr or from a rust actix-web image for static files

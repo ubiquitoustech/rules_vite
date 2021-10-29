@@ -16,5 +16,5 @@ try-import %workspace%/.bazelrc.user
 
 
 
-build --deleted_packages=examples/vite-project
-query --deleted_packages=examples/vite-project
+build --deleted_packages=examples/vite-project,examples/react-full
+query --deleted_packages=examples/vite-project,examples/react-full

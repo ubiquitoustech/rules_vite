@@ -1,14 +1,14 @@
-# load(
-#     "@ubiquitous_tech_rules_vite//vite:defs.bzl",
-#     "vite",
-#     "vite_dev",
-# )
-
 load(
-    "@npm//@ubiquitoustech/rules_vite:index.bzl",
+    "@ubiquitous_tech_rules_vite//vite:defs.bzl",
     "vite",
     "vite_dev",
 )
+
+# load(
+#     "@npm//@ubiquitoustech/rules_vite:index.bzl",
+#     "vite",
+#     "vite_dev",
+# )
 load("@npm//history-server:index.bzl", "history_server")
 
 vite(
@@ -40,6 +40,8 @@ vite_dev(
         ":tsconfig.json",
     ],
     config = ":vite.config.mjs",
+    npm_managed_directory_name = "npm",
+    npm_managed_directory_path = "node_modules",
     deps = [
         "@npm//@types/react",
         "@npm//@types/react-dom",

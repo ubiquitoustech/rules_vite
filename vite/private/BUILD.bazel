@@ -9,3 +9,5 @@ filegroup(
 )
 
 exports_files(["launcher_template.sh"])
+
+exports_files(["vite_plugin_ssr_launcher_template.sh"])

@@ -1,31 +1,23 @@
 """
-vite actions
+copy actions
 """
 
 load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
 
-def vite_build_action(ctx, srcs, out):
-    """Run a production build of the vite project
+def copy_build_action(ctx, srcs, folders_to_copy, out):
+    """copy files for output of a vite project
 
     Args:
         ctx: arguments description, can be
         multiline with additional indentation.
         srcs: source files
+        folders_to_copy: the deps to copy
         out: output directory
     """
 
-    # setup the args passed to vite
-    launcher_args = ctx.actions.args()
-
-    launcher_args.add_all([
-        "build",
-        "--config",
-        ctx.file.config,
-        "--outDir",
-        out.path,
+    folders_to_copy.add_all([
+        "%s/" % out.path,
     ])
-
-    launcher_args.add_all(ctx.attr.args)
 
     outputs = []
     outputs.append(out)
@@ -38,9 +30,9 @@ def vite_build_action(ctx, srcs, out):
         ctx = ctx,
         inputs = depset(srcs),
         outputs = outputs,
-        arguments = [launcher_args],
+        arguments = [folders_to_copy],
         execution_requirements = execution_requirements,
-        mnemonic = "vite",
-        executable = "vite",
+        mnemonic = "copy",
+        executable = "_copy",
         link_workspace_root = True,
     )

@@ -1,0 +1,162 @@
+load(
+    "@ubiquitous_tech_rules_vite//vite:defs.bzl",
+    "copy_build",
+    "vite",
+    "vite_plugin_ssr_build",
+    "vite_plugin_ssr_dev",
+)
+
+# load(
+#     "@npm//@ubiquitoustech/rules_vite:index.bzl",
+#     "vite",
+#     "vite_dev",
+# )
+load("@npm//history-server:index.bzl", "history_server")
+
+# clean these up so they are just for the build
+_DEPS = [
+    "@npm//@mdx-js/mdx",
+    "@npm//@mdx-js/react",
+    "@npm//@types/express",
+    "@npm//@types/node",
+    "@npm//@types/node-fetch",
+    "@npm//@types/react",
+    "@npm//@types/react-dom",
+    "@npm//@vitejs/plugin-react",
+    "@npm//cross-fetch",
+    "@npm//express",
+    "@npm//node-fetch",
+    "@npm//react",
+    "@npm//react-dom",
+    "@npm//rimraf",
+    "@npm//serve",
+    "@npm//ts-node",
+    "@npm//typescript",
+    "@npm//vite",
+    "@npm//vite-plugin-mdx",
+    "@npm//vite-plugin-ssr",
+]
+
+vite(
+    name = "client",
+    srcs = glob([
+        "components/**",
+        "pages/**",
+        "renderer/**",
+    ]) + [
+        ":package.json",
+        ":yarn.lock",
+        ":tsconfig.json",
+    ],
+    config = ":vite.config.ts",
+    # dir = "prod",
+    ssrtype = "client",
+    deps = _DEPS,
+)
+
+vite(
+    name = "server",
+    srcs = glob([
+        "components/**",
+        "pages/**",
+        "renderer/**",
+    ]) + [
+        # ":index.html",
+        ":package.json",
+        ":yarn.lock",
+        ":tsconfig.json",
+    ],
+    args = ["--ssr"],
+    config = ":vite.config.ts",
+    # dir = "prod",
+    ssrtype = "server",
+    deps = _DEPS,
+)
+
+vite_plugin_ssr_build(
+    name = "client2",
+    client_build = ":client",
+    server_build = ":server",
+    # srcs = glob(["components/**", "pages/**", "renderer/**"]) + [
+    #     # ":index.html",
+    #     ":package.json",
+    #     ":yarn.lock",
+    #     ":tsconfig.json",
+    # ],
+    # dir = "prod",
+    # ssrtype = "client",
+    # config = ":vite.config.ts",
+    # args = ["--ssr"],
+    ssrtype = "client",
+    deps = _DEPS + [
+        ":client",
+        ":server",
+    ],
+)
+
+copy_build(
+    name = "final",
+    client_build = [
+        ":client",
+        ":client2",
+    ],
+    server_build = ":server",
+    deps = [
+        ":client",
+        ":client2",
+        ":server",
+        "@npm//copyfiles",
+    ],
+)
+
+# bazel run @npm//vite-plugin-ssr/bin:vite-plugin-ssr -- prerender --help
+
+# vite_dev(
+#     name = "dev",
+#     srcs = glob(["src/**"]) + [
+#         ":index.html",
+#         ":package.json",
+#         ":yarn.lock",
+#         ":tsconfig.json",
+#     ],
+#     config = ":vite.config.mjs",
+#     deps = [
+#         "@npm//@types/react",
+#         "@npm//@types/react-dom",
+#         "@npm//@vitejs/plugin-react",
+#         "@npm//react",
+#         "@npm//react-dom",
+#         "@npm//typescript",
+#         "@npm//vite",
+#     ],
+# )
+
+PROD_BUNDLE = ":final"
+
+history_server(
+    name = "prodserver",
+    data = [PROD_BUNDLE],
+    templated_args = ["-a $$(rlocation $(rootpath %s))/client" % PROD_BUNDLE],
+)
+
+vite_plugin_ssr_dev(
+    name = "dev",
+    srcs = glob([
+        "components/**",
+        "pages/**",
+        "renderer/**",
+        "server/**",
+    ]) + [
+        ":package.json",
+        ":yarn.lock",
+        ":tsconfig.json",
+        ":vite.config.ts",
+    ],
+    command = "server/index.ts",
+    npm_managed_directory_name = "npm",
+    npm_managed_directory_path = "node_modules",
+    # dir = "prod",
+    # ssrtype = "client",
+    # config = ":vite.config.ts",
+    deps = _DEPS,
+)
