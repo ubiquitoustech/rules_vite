@@ -13,6 +13,9 @@ load(
 # )
 load("@npm//history-server:index.bzl", "history_server")
 
+#### Testing a better way to package waiting on changes to rules
+load("@rules_pkg//:mappings.bzl", "filter_directory", "strip_prefix")
+
 # clean these up so they are just for the build
 _DEPS = [
     "@npm//@mdx-js/mdx",
@@ -109,6 +112,21 @@ copy_build(
     ],
 )
 
+# copy_build(
+#     name = "final2",
+#     client_build = [
+#         ":client_files",
+#         ":client2_files",
+#     ],
+#     server_build = ":server_files",
+#     deps = [
+#         ":client_files",
+#         ":client2_files",
+#         ":server_files",
+#         "@npm//copyfiles",
+#     ],
+# )
+
 # bazel run @npm//vite-plugin-ssr/bin:vite-plugin-ssr -- prerender --help
 
 # vite_dev(
@@ -160,3 +178,42 @@ vite_plugin_ssr_dev(
     # config = ":vite.config.ts",
     deps = _DEPS,
 )
+
+filter_directory(
+    name = "client_files",
+    src = ":client",
+    # Where it should be in the final package
+    prefix = "client",
+    # Required, but why?: see #354
+    strip_prefix = strip_prefix.from_pkg(),
+)
+
+filter_directory(
+    name = "server_files",
+    src = ":server",
+    # Where it should be in the final package
+    prefix = "server",
+    # Required, but why?: see #354
+    strip_prefix = strip_prefix.from_pkg(),
+)
+
+filter_directory(
+    name = "client2_files",
+    src = ":client2",
+    # Where it should be in the final package
+    prefix = "client",
+    # Required, but why?: see #354
+    strip_prefix = strip_prefix.from_pkg(),
+)
+
+# pkg_zip(
+#     name = "foo_zip",
+#     srcs = [
+#         # "README.txt",
+#         # ":manpages",
+#         # ":share_doc",
+#         ":client_files",
+#         ":server_files",
+#         ":client2_files",
+#     ],
+# )
