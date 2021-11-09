@@ -286,10 +286,10 @@
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
-"@ubiquitoustech/rules_vite@0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@ubiquitoustech/rules_vite/-/rules_vite-0.4.2.tgz#70184039b34efc1d485e68d45ea35725eb9c073c"
-  integrity sha512-WB00xloLXrBx92NiclOGePrBXHC1RyATBHTz2ImTE+64oprU6AQXjqeJwjmR3ocmO5vFLu9L8yuZKyhtI7jGgQ==
+"@ubiquitoustech/rules_vite@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@ubiquitoustech/rules_vite/-/rules_vite-0.4.4.tgz#a666513786b6fbd739e333ea09ddee858572711d"
+  integrity sha512-NpN3yXOEM8qJyKqrIA8mzpcUuOaw82aGzeAaFYpifBaeJ7B/Dqz9+59kAqk8B7n5P0V9ZQDBWz9Por1yUmiIlw==
 
 "@vitejs/plugin-react@^1.0.0":
   version "1.0.2"

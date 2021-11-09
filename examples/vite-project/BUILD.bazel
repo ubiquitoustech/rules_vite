@@ -1,14 +1,14 @@
-load(
-    "@ubiquitous_tech_rules_vite//vite:defs.bzl",
-    "vite",
-    "vite_dev",
-)
-
 # load(
-#     "@npm//@ubiquitoustech/rules_vite:index.bzl",
+#     "@ubiquitous_tech_rules_vite//vite:defs.bzl",
 #     "vite",
 #     "vite_dev",
 # )
+
+load(
+    "@npm//@ubiquitoustech/rules_vite:index.bzl",
+    "vite",
+    "vite_dev",
+)
 load("@npm//history-server:index.bzl", "history_server")
 
 vite(

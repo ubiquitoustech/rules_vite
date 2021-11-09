@@ -4,6 +4,8 @@ bazel-out
 # is there a better way to deal with these example repos making bazel build ... to fail from the parent workspace?
 examples/vite-project/node_modules
 examples/vite-project/dist
+examples/vite-project/bazel-out
 
 examples/react-full/node_modules
 examples/react-full/dist
+examples/react-full/bazel-out

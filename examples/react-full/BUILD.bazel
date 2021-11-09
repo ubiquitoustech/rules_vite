@@ -1,20 +1,19 @@
+# load(
+#     "@ubiquitous_tech_rules_vite//vite:defs.bzl",
+#     "copy_build",
+#     "vite",
+#     "vite_plugin_ssr_build",
+#     "vite_plugin_ssr_dev",
+# )
+
 load(
-    "@ubiquitous_tech_rules_vite//vite:defs.bzl",
+    "@npm//@ubiquitoustech/rules_vite:index.bzl",
     "copy_build",
     "vite",
     "vite_plugin_ssr_build",
     "vite_plugin_ssr_dev",
 )
-
-# load(
-#     "@npm//@ubiquitoustech/rules_vite:index.bzl",
-#     "vite",
-#     "vite_dev",
-# )
 load("@npm//history-server:index.bzl", "history_server")
-
-#### Testing a better way to package waiting on changes to rules
-load("@rules_pkg//:mappings.bzl", "filter_directory", "strip_prefix")
 
 # clean these up so they are just for the build
 _DEPS = [
@@ -52,7 +51,6 @@ vite(
         ":tsconfig.json",
     ],
     config = ":vite.config.ts",
-    # dir = "prod",
     ssrtype = "client",
     deps = _DEPS,
 )
@@ -64,14 +62,12 @@ vite(
         "pages/**",
         "renderer/**",
     ]) + [
-        # ":index.html",
         ":package.json",
         ":yarn.lock",
         ":tsconfig.json",
     ],
     args = ["--ssr"],
     config = ":vite.config.ts",
-    # dir = "prod",
     ssrtype = "server",
     deps = _DEPS,
 )
@@ -80,16 +76,6 @@ vite_plugin_ssr_build(
     name = "client2",
     client_build = ":client",
     server_build = ":server",
-    # srcs = glob(["components/**", "pages/**", "renderer/**"]) + [
-    #     # ":index.html",
-    #     ":package.json",
-    #     ":yarn.lock",
-    #     ":tsconfig.json",
-    # ],
-    # dir = "prod",
-    # ssrtype = "client",
-    # config = ":vite.config.ts",
-    # args = ["--ssr"],
     ssrtype = "client",
     deps = _DEPS + [
         ":client",
@@ -111,43 +97,6 @@ copy_build(
         "@npm//copyfiles",
     ],
 )
-
-# copy_build(
-#     name = "final2",
-#     client_build = [
-#         ":client_files",
-#         ":client2_files",
-#     ],
-#     server_build = ":server_files",
-#     deps = [
-#         ":client_files",
-#         ":client2_files",
-#         ":server_files",
-#         "@npm//copyfiles",
-#     ],
-# )
-
-# bazel run @npm//vite-plugin-ssr/bin:vite-plugin-ssr -- prerender --help
-
-# vite_dev(
-#     name = "dev",
-#     srcs = glob(["src/**"]) + [
-#         ":index.html",
-#         ":package.json",
-#         ":yarn.lock",
-#         ":tsconfig.json",
-#     ],
-#     config = ":vite.config.mjs",
-#     deps = [
-#         "@npm//@types/react",
-#         "@npm//@types/react-dom",
-#         "@npm//@vitejs/plugin-react",
-#         "@npm//react",
-#         "@npm//react-dom",
-#         "@npm//typescript",
-#         "@npm//vite",
-#     ],
-# )
 
 PROD_BUNDLE = ":final"
 
@@ -179,32 +128,33 @@ vite_plugin_ssr_dev(
     deps = _DEPS,
 )
 
-filter_directory(
-    name = "client_files",
-    src = ":client",
-    # Where it should be in the final package
-    prefix = "client",
-    # Required, but why?: see #354
-    strip_prefix = strip_prefix.from_pkg(),
-)
+# attempt to use bazel rules to move folders currently don't work
+# filter_directory(
+#     name = "client_files",
+#     src = ":client",
+#     # Where it should be in the final package
+#     prefix = "client",
+#     # Required, but why?: see #354
+#     strip_prefix = strip_prefix.from_pkg(),
+# )
 
-filter_directory(
-    name = "server_files",
-    src = ":server",
-    # Where it should be in the final package
-    prefix = "server",
-    # Required, but why?: see #354
-    strip_prefix = strip_prefix.from_pkg(),
-)
+# filter_directory(
+#     name = "server_files",
+#     src = ":server",
+#     # Where it should be in the final package
+#     prefix = "server",
+#     # Required, but why?: see #354
+#     strip_prefix = strip_prefix.from_pkg(),
+# )
 
-filter_directory(
-    name = "client2_files",
-    src = ":client2",
-    # Where it should be in the final package
-    prefix = "client",
-    # Required, but why?: see #354
-    strip_prefix = strip_prefix.from_pkg(),
-)
+# filter_directory(
+#     name = "client2_files",
+#     src = ":client2",
+#     # Where it should be in the final package
+#     prefix = "client",
+#     # Required, but why?: see #354
+#     strip_prefix = strip_prefix.from_pkg(),
+# )
 
 # pkg_zip(
 #     name = "foo_zip",

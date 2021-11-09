@@ -26,16 +26,18 @@ local_repository(
 # #     urls = ["https://github.com/ubiquitoustech/rules_vite/archive/%s.zip" % VITE_COMMIT],
 # # )
 
-# load("@ubiquitous_tech_rules_vite//vite:repositories.bzl", "rules_vite_dependencies")
+load("@ubiquitous_tech_rules_vite//vite:repositories.bzl", "rules_vite_dependencies")
 
-# rules_vite_dependencies()
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+rules_vite_dependencies()
 
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "4501158976b9da216295ac65d872b1be51e3eeb805273e68c516d2eb36ae1fbb",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.1/rules_nodejs-4.4.1.tar.gz"],
-)
+# if you don't want to import the rules and use the npm package instead you still need build_bazel_rules_nodejs
+# load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# http_archive(
+#     name = "build_bazel_rules_nodejs",
+#     sha256 = "4913ea835810c195df24d3a929315c29a64566cc48e409d8b0f35008b4e02e59",
+#     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.4/rules_nodejs-4.4.4.tar.gz"],
+# )
 
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")

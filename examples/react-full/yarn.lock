@@ -540,6 +540,11 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
 
+"@ubiquitoustech/rules_vite@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@ubiquitoustech/rules_vite/-/rules_vite-0.4.4.tgz#a666513786b6fbd739e333ea09ddee858572711d"
+  integrity sha512-NpN3yXOEM8qJyKqrIA8mzpcUuOaw82aGzeAaFYpifBaeJ7B/Dqz9+59kAqk8B7n5P0V9ZQDBWz9Por1yUmiIlw==
+
 "@vitejs/plugin-react@^1.0.4":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-1.0.6.tgz#edbbe70151ce8b154ed1eb6a6f1962146ce1112b"
